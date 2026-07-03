@@ -1,0 +1,111 @@
+{
+  "resourceType": "Bundle",
+  "id": "synthetic-medium-risk-bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "synthetic-patient-002",
+        "birthDate": "1952-10-02",
+        "gender": "male"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-med-index",
+        "status": "finished",
+        "class": {
+          "code": "IMP",
+          "display": "inpatient"
+        },
+        "period": {
+          "start": "2025-11-15T08:00:00Z",
+          "end": "2025-11-20T13:45:00Z"
+        },
+        "hospitalization": {
+          "dischargeDisposition": {
+            "text": "Home health services"
+          }
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-med-ed",
+        "status": "finished",
+        "class": {
+          "code": "EMER",
+          "display": "emergency"
+        },
+        "period": {
+          "start": "2025-09-02T18:10:00Z",
+          "end": "2025-09-02T23:00:00Z"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-med-001",
+        "code": {
+          "text": "Type 2 diabetes mellitus"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-med-002",
+        "code": {
+          "text": "Chronic obstructive pulmonary disease"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "med-med-001",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Metformin"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "med-med-002",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Albuterol"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-med-hemoglobin",
+        "code": {
+          "text": "Hemoglobin"
+        },
+        "valueQuantity": {
+          "value": 10.4,
+          "unit": "g/dL"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "proc-med-001",
+        "code": {
+          "text": "Medication reconciliation"
+        }
+      }
+    }
+  ]
+}
+

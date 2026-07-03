@@ -1,0 +1,77 @@
+{
+  "resourceType": "Bundle",
+  "id": "synthetic-low-risk-bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "synthetic-patient-001",
+        "birthDate": "1982-04-17",
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-low-index",
+        "status": "finished",
+        "class": {
+          "code": "IMP",
+          "display": "inpatient"
+        },
+        "period": {
+          "start": "2025-12-05T09:00:00Z",
+          "end": "2025-12-07T11:30:00Z"
+        },
+        "hospitalization": {
+          "dischargeDisposition": {
+            "text": "Home"
+          }
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-low-001",
+        "code": {
+          "text": "Hypertension"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "med-low-001",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Lisinopril"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-low-creatinine",
+        "code": {
+          "text": "Creatinine"
+        },
+        "valueQuantity": {
+          "value": 0.9,
+          "unit": "mg/dL"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "proc-low-001",
+        "code": {
+          "text": "Discharge education"
+        }
+      }
+    }
+  ]
+}
+
