@@ -3,7 +3,7 @@
 ## Model
 
 - Name: `readmission-risk-demo-v0.1.0`
-- Family: deterministic XGBoost-style / gradient-boosted demo scorer
+- Family: fixed-weight linear score with logistic sigmoid (hand-set demo constants)
 - Intended use: portfolio demonstration of a readmission-risk API architecture
 
 ## Data
@@ -24,4 +24,6 @@ The service returns a probability-like risk score, a low/medium/high band, and t
 - Not clinically validated.
 - Not appropriate for diagnosis, treatment, benefit decisions, or live clinical decision support.
 - Coefficients are transparent demo weights, not measured production outcomes.
+- No model fitting, predictive evaluation, calibration, or boosted trees are present in the serving path.
+- `scripts/train_model.py` exports the existing constants; it does not train on the generated synthetic rows. The API does not load the exported artifact.
 

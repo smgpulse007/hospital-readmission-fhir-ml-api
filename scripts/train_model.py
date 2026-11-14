@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+# Historical entry point name: this exports constants, it does not fit a model.
+
 import json
 from pathlib import Path
 
@@ -13,10 +15,10 @@ def main() -> None:
         json.dumps(
             {
                 "model_version": MODEL_VERSION,
-                "model_family": "deterministic gradient-boosted-style demo scorer",
+                "model_family": "fixed-weight linear score with logistic sigmoid",
                 "intercept": INTERCEPT,
                 "feature_weights": FEATURE_WEIGHTS,
-                "training_data": "synthetic generated rows only",
+                "training_data": "none; weights are hand-set demo constants",
                 "clinical_status": "not clinically validated",
             },
             indent=2,
