@@ -4,6 +4,10 @@ Synthetic FHIR-style FastAPI service for 30-day hospital readmission risk scorin
 
 > Portfolio demo only: this repository uses synthetic data and a deterministic demo model. It contains no PHI, PII, employer data, production credentials, or clinical decision support logic. It is not for clinical use.
 
+![Recorded synthetic API walkthrough: score three bundled fixtures and reject an invalid bundle](docs/api-demo.gif)
+
+The animation shows actual in-process API responses and test output. Scores come from hand-set weights; they are not measured clinical risk. [Recording details](docs/record-demo.md)
+
 ## Problem
 
 Health plans and provider organizations often need to identify patients who may need extra transition-of-care support after discharge. A production system would need governed data pipelines, validated models, clinical review, monitoring, security controls, and careful workflow integration.
@@ -46,11 +50,29 @@ tests/      API, schema, and feature extraction tests
 
 ### Local Python
 
+Clone the repository and use an isolated environment (Python 3.10 or newer):
+
+```bash
+git clone https://github.com/smgpulse007/hospital-readmission-fhir-ml-api.git
+cd hospital-readmission-fhir-ml-api
+python -m venv .venv
+# macOS/Linux
+source .venv/bin/activate
+# Windows PowerShell, instead
+.\.venv\Scripts\Activate.ps1
+```
+
+Install, exercise the bundled synthetic fixtures, and start the service:
+
 ```bash
 python -m pip install -e .[dev]
+python scripts/demo_api.py
 python -m pytest
 uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
+
+Explore the interactive API at **http://127.0.0.1:8000/docs**. The walkthrough
+uses FastAPI's in-process test client, so it works before starting a server.
 
 ### Docker
 

@@ -1,0 +1,26 @@
+{
+  "recorded_utc": "2026-11-14T04:14:22.892248+00:00",
+  "kind": "animation_rendered_from_actual_command_output",
+  "normalization": "Local repository absolute paths replaced with <repository>; responses and results unchanged.",
+  "source_sha256": {
+    "app/main.py": "49830d899e1833124c0a5f1c1c26bd3e6f1509f35457bc0e718261777958f88e",
+    "app/features.py": "6036c591ea51b8924a8cf9fca62c4b84de916e118b9685e21382e76f5af24aee",
+    "app/model.py": "5815332f8d019169520ff2fc828d5c3dd16ab3d160e0adcf33fc5bbe56fe7f65",
+    "scripts/demo_api.py": "dfdaa1d4ebdd8d9d60d0395180839b07027334b6914360ba0dfb291afb3cc5fb",
+    "data/synthetic_fhir_bundle_low_risk.json": "1f9df3ca6702e6431a84c1300eea770aef09912668d9d4fb6c66d8eb7203c119",
+    "data/synthetic_fhir_bundle_medium_risk.json": "9ed258de2ebd6807c47fb6336f1e4eac83964ec0840caab6750247f1f233f154",
+    "data/synthetic_fhir_bundle_high_risk.json": "89091fff7f02ccd120729f5549d5e5e59c5206de5403f284cb236233c4c048e5"
+  },
+  "commands": [
+    {
+      "command": "python scripts/demo_api.py",
+      "exit_code": 0,
+      "output": "Synthetic FHIR API walkthrough (in-process TestClient)\nFixed demo weights; not a trained or clinically validated model.\n\nGET /health -> 200 ok\n\nPOST /score/fhir-bundle -> 200 | low fixture\n  synthetic-patient-001: demo score 0.0800, band low\n  Top contribution: age = 44 (increases_risk)\n\nPOST /score/fhir-bundle -> 200 | medium fixture\n  synthetic-patient-002: demo score 0.3900, band medium\n  Top contribution: age = 74 (increases_risk)\n\nPOST /score/fhir-bundle -> 200 | high fixture\n  synthetic-patient-003: demo score 0.9800, band high\n  Top contribution: prior_admissions_180d = 3 (increases_risk)\n\nMalformed bundle -> 422 (expected rejection)\nNo network server, patient record, or external API is used in this walkthrough.\n<repository>\\.venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+    },
+    {
+      "command": "python -m pytest -q",
+      "exit_code": 0,
+      "output": ".............                                                            [100%]\n============================== warnings summary ===============================\n.venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  <repository>\\.venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n13 passed, 1 warning in 0.31s\n"
+    }
+  ]
+}
