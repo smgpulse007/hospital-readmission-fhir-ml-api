@@ -25,7 +25,7 @@ COMORBIDITY_KEYWORDS = {
 
 
 def build_features(bundle: dict[str, Any], as_of: datetime | None = None) -> dict[str, float]:
-    as_of = as_of or datetime(2026, 1, 1, tzinfo=timezone.utc)
+    as_of = _as_utc(as_of or datetime(2026, 1, 1, tzinfo=timezone.utc))
     patient = first_resource(bundle, "Patient") or {}
     encounters = resources_by_type(bundle, "Encounter")
     conditions = resources_by_type(bundle, "Condition")
@@ -62,17 +62,23 @@ def build_features(bundle: dict[str, Any], as_of: datetime | None = None) -> dic
         if keyword in condition_blob:
             features[feature_name] = 1.0
 
-    inpatient_starts = [
-        parse_datetime((encounter.get("period") or {}).get("start"))
-        for encounter in encounters
-        if _encounter_class(encounter) in {"inpatient", "imp"}
-    ]
-    index_admission_start = max((start for start in inpatient_starts if start), default=None)
+    # Select one index encounter; historical and emergency stays must not
+    # contribute its length of stay or discharge disposition.
+    inpatient_encounters = []
+    for encounter in encounters:
+        start = parse_datetime((encounter.get("period") or {}).get("start"))
+        if (
+            _encounter_class(encounter) in {"inpatient", "imp"}
+            and start is not None
+            and _as_utc(start) <= as_of
+        ):
+            inpatient_encounters.append((_as_utc(start), encounter))
+    index_encounter = max(inpatient_encounters, key=lambda item: item[0])[1] if inpatient_encounters else None
 
     for encounter in encounters:
         encounter_class = _encounter_class(encounter)
         start = parse_datetime((encounter.get("period") or {}).get("start"))
-        is_index_admission = start is not None and index_admission_start is not None and start == index_admission_start
+        is_index_admission = encounter is index_encounter
         if (
             encounter_class in {"inpatient", "imp"}
             and not is_index_admission
@@ -81,10 +87,9 @@ def build_features(bundle: dict[str, Any], as_of: datetime | None = None) -> dic
             features["prior_admissions_180d"] += 1.0
         if encounter_class in {"emergency", "emer"} and _within_days(start, as_of, 180):
             features["emergency_visits_180d"] += 1.0
-        features["index_length_of_stay_days"] = max(
-            features["index_length_of_stay_days"],
-            _length_of_stay_days(encounter),
-        )
+        if not is_index_admission:
+            continue
+        features["index_length_of_stay_days"] = _length_of_stay_days(encounter)
         disposition = str(
             ((encounter.get("hospitalization") or {}).get("dischargeDisposition") or {}).get("text", "")
         ).lower()
@@ -120,9 +125,7 @@ def _encounter_class(encounter: dict[str, Any]) -> str:
 def _within_days(start: datetime | None, as_of: datetime, days: int) -> bool:
     if start is None:
         return False
-    if start.tzinfo is None:
-        start = start.replace(tzinfo=timezone.utc)
-    delta = as_of - start
+    delta = _as_utc(as_of) - _as_utc(start)
     return 0 <= delta.days <= days
 
 
@@ -132,4 +135,8 @@ def _length_of_stay_days(encounter: dict[str, Any]) -> float:
     end = parse_datetime(period.get("end"))
     if not start or not end:
         return 0.0
-    return max(0.0, (end - start).total_seconds() / 86400)
+    return max(0.0, (_as_utc(end) - _as_utc(start)).total_seconds() / 86400)
+
+
+def _as_utc(value: datetime) -> datetime:
+    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)

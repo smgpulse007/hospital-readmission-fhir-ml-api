@@ -17,7 +17,7 @@ flowchart LR
     A["Synthetic FHIR-style Bundle"] --> B["FastAPI Request Schema"]
     B --> C["FHIR Parser"]
     C --> D["Feature Engineering"]
-    D --> E["Gradient-boosted-style Demo Scorer"]
+    D --> E["Fixed-weight Linear Score + Sigmoid"]
     E --> F["Explainability Layer"]
     F --> G["Typed Risk Response"]
     D --> H["Validation Tests"]
@@ -105,15 +105,17 @@ The feature builder intentionally mirrors common readmission modeling concepts w
 | Demographics | age, age over 75 |
 | Utilization | prior admissions, emergency encounters, length of stay |
 | Clinical burden | comorbidity count, diabetes, CHF, COPD, CKD flags |
-| Medication complexity | active medication count |
+| Medication complexity | count of supplied MedicationRequest resources |
 | Labs and observations | abnormal lab count, high creatinine, low hemoglobin |
-| Discharge context | home health, skilled nursing facility, expired disposition flag |
+| Discharge context | home health and skilled nursing facility flags for the index inpatient encounter |
 
 ## Model And Evaluation
 
-The scorer is a deterministic, XGBoost-style / gradient-boosted risk model stand-in with transparent coefficients. It is deliberately lightweight so the demo can run in constrained portfolio environments without native model dependencies.
+The scorer in `app/model.py` computes a fixed-weight linear score plus an intercept, then applies a logistic sigmoid. The weights are hand-set demo constants, not learned coefficients; there are no boosted trees or trained XGBoost artifacts in the serving path. The output is a demonstration score, not a calibrated probability of readmission.
 
-For a production build, the same feature contract could feed XGBoost, scikit-learn, LightGBM, or another governed model artifact. The included scripts generate a synthetic tabular training set and coefficient file to show the intended MLOps shape, but the checked-in scorer is not a clinically validated model.
+The synthetic-row generator and `python -m scripts.train_model` are scaffolding: the latter exports the existing constants to JSON without fitting a model or reading the generated rows. The API uses the Python constants directly and does not load that JSON file. No predictive performance or clinical validity has been established.
+
+The index admission is the latest inpatient encounter with a parseable start at or before `as_of` (the first in bundle order when starts tie). Only that encounter supplies index length of stay and discharge disposition. Missing valid inpatient encounters leave these fields at zero. Date-only or timezone-free timestamps are interpreted as UTC; the demo defaults `as_of` to 2026-01-01 for reproducibility. Other features use simplified keyword/count rules and do not establish FHIR conformance or clinical semantics.
 
 ## Tests And CI
 
